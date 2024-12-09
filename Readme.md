@@ -18,4 +18,4 @@
 - プレビューの表示が可能
   * 全ての環境で同様のレンダリング結果が得られるとは限らないことに注意
 - クエリパラメータ(str=???)で文字列を事前入力可能
-  * [https://mr-ojii.github.io/SVGVerticalTextHelper?str=こんにちは](https://mr-ojii.github.io/SVGVerticalTextHelper?str=こんにちは)
+  * [https://mr-ojii.github.io/SVG-VerticalTextHelper?str=こんにちは](https://mr-ojii.github.io/SVG-VerticalTextHelper?str=こんにちは)
