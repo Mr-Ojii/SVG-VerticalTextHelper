@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>SVG Vertical Text Helper</title>
+  <script type="text/javascript">
+    function dump() {
+      const ex_ch = ['、', '。', '」', '』'];
+      const str = document.getElementById("src").value;
+      const bg_c = document.getElementById("bg_c").value;
+      const fill_c = document.getElementById("fill_c").value;
+      const fontsize = Number(document.getElementById("fontsize").value);
+      const fontweight = Number(document.getElementById("fontweight").value);
+      const linespacing = Number(document.getElementById("linespacing").value);
+      const linefeed = Number(document.getElementById("linefeed").value);
+      const font = document.getElementById("font").value;
+      const monospace = document.getElementById("monospace").checked;
+      let s = `<text text-rendering="auto" fill="${fill_c}" font-size="${fontsize}" stroke-opacity="0" stroke="#000000" stroke-width="0" stroke-linecap="square" stroke-linejoin="bevel" letter-spacing="0" word-spacing="0" writing-mode="vertical-rl" style="text-orientation: upright;text-align: start;text-align-last: auto;font-family: ${font};font-size: ${fontsize};font-weight: ${fontweight};"><tspan x="0" y="${fontsize}">`;
+      let last = 0, lf = 0, lf_count = 1;
+      for (let i = 0; i < str.length; i++) {
+        if ((i != 0 && last >= linefeed) || str[i] == '\n') {
+          if (ex_ch.includes(str[i])) {
+            last -= 1;
+            lf -= 1;
+          } else {
+            if (str[i] == '\n')
+              lf = 0;
+            let l = (lf == 0) ? fontsize : 0;
+            s += `</tspan><tspan y="${l}" dx="-${fontsize + linespacing}">`;
+            last = 0;
+            lf_count += 1;
+          }
+        }
+        if (lf == 0) {
+          last += 1;
+          lf += 1;
+        }
+        if (str[i] != '\n') {
+          lf += 1;
+          last += 1;
+          s += str[i];
+          if (monospace)
+            s += `</tspan><tspan y="${fontsize * last}" dx="0">`
+        }
+      }
+      s += "</tspan></text>";
+      document.getElementById("dst").value = s;
+      document.getElementById("prev").innerHTML = `<svg version="1.1" width="${(lf_count + 1) * (linespacing + fontsize)}px" xmlns="http://www.w3.org/2000/svg" viewBox="${lf_count * -(linespacing + fontsize)} 0 ${(lf_count + 1) * (linespacing + fontsize)} ${fontsize * (linefeed + 1)}" >` + s + `</svg>`;
+      document.getElementById("prev").style.backgroundColor = bg_c;
+    }
+    window.onload = () => {
+      const url = new URL(window.location.href);
+      document.getElementById("src").value = url.searchParams.get("str");
+      dump();
+    }
+  </script>
+</head>
+
+<body>
+  <h1>SVG Vertical Text Helper</h1>
+  <p><label for="bg_c">bg (not SVG Element):</label><input type="color" id="bg_c" name="bg_c" value="#ffffff" onchange="dump()" /></p>
+  <p><label for="fill_c">fill:</label><input type="color" id="fill_c" name="fill_c" value="#262626" onchange="dump()" /></p>
+  <p><label for="fontsize">fontsize:</label><input type="number" id="fontsize" name="fontsize" value="13" onchange="dump()" /></p>
+  <p><label for="fontweight">fontweight:</label><input type="number" id="fontweight" name="fontweight" value="700" onchange="dump()" /></p>
+  <p><label for="linespacing">linespacing:</label><input type="number" id="linespacing" name="linespacing" value="1" onchange="dump()" /></p>
+  <p><label for="linefeed">linefeed:</label><input type="number" id="linefeed" name="linefeed" value="11" onchange="dump()" /></p>
+  <p><label for="font">font:</label><input type="text" id="font" name="font" value="Hiragino Mincho ProN" oninput="dump()" /></p>
+  <p><label for="monospace">force monospace:</label><input type="checkbox" id="monospace" name="monospace" oninput="dump()" /></p>
+
+  <p><textarea id="src" oninput="dump()" style="width: 90vw; height: 20vh;"></textarea></p>
+  <p><textarea id="dst" readonly style="width: 90vw; height: 20vh;"></textarea></p>
+  <label for="prev">Preview</label>
+  <div id="prev"></div>
+</body>
+
+</html>
